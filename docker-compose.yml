@@ -1,0 +1,16 @@
+# Yerel PostgreSQL: docker compose up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: saglikasistani-db
+    environment:
+      POSTGRES_DB: saglikasistani
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - saglikasistani_pg:/var/lib/postgresql/data
+
+volumes:
+  saglikasistani_pg:

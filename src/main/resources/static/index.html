@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sağlık Asistanı</title>
+    <meta name="description" content="Kişisel beslenme ve kalori takip uygulamanız.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=37">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ===================== AUTH EKRANI ===================== -->
+<div id="auth-screen" class="auth-screen">
+    <div class="auth-bg">
+        <div class="auth-bg-orb orb1"></div>
+        <div class="auth-bg-orb orb2"></div>
+        <div class="auth-bg-orb orb3"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-brand">
+            <div class="auth-brand-icon">●</div>
+            <h1 class="auth-brand-title">Sağlık<br>Asistanı</h1>
+            <p class="auth-brand-desc">Beslenmeni takip et,<br>hedeflerine daha hızlı ve doğru ulaş.</p>
+            <div class="auth-brand-visual">
+                <img src="health-hero.svg" alt="Sağlık takip illüstrasyonu">
+            </div>
+            <div class="auth-features">
+                <div class="auth-feature"><span class="af-dot"></span>500+ Türk yemeği veritabanı</div>
+                <div class="auth-feature"><span class="af-dot"></span>Kalori & makro takibi</div>
+                <div class="auth-feature"><span class="af-dot"></span>Günlük su & kilo takibi</div>
+                <div class="auth-feature"><span class="af-dot"></span>Kişisel hedef & rapor</div>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-giris-btn" onclick="switchAuthTab('giris')">Giriş Yap</button>
+                <button class="auth-tab" id="tab-kayit-btn" onclick="switchAuthTab('kayit')">Kayıt Ol</button>
+            </div>
+
+            <form id="form-giris" class="auth-form">
+                <div class="auth-form-header">
+                    <h2>Tekrar hoş geldin 👋</h2>
+                    <p>Hesabına giriş yap</p>
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="giris-email" placeholder="ornek@mail.com" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <div class="input-eye-wrap">
+                        <input type="password" id="giris-sifre" placeholder="••••••••" autocomplete="current-password" required>
+                        <button type="button" class="eye-btn" onclick="togglePassword('giris-sifre', this)">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="giris-submit-btn">
+                    <span>Giriş Yap</span>
+                    <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <div id="giris-hata" class="auth-error hidden"></div>
+            </form>
+
+            <form id="form-kayit" class="auth-form hidden">
+                <div class="auth-stepper">
+                    <div class="auth-step-dot active" id="auth-step-dot-1">1</div>
+                    <div class="auth-step-line" id="auth-step-line"></div>
+                    <div class="auth-step-dot" id="auth-step-dot-2">2</div>
+                </div>
+                <!-- ADIM 1 -->
+                <div id="kayit-step-1">
+                    <div class="auth-form-header">
+                        <h2>Hesap oluştur 🌱</h2>
+                        <p>Adım 1/2 · Temel bilgiler</p>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad</label>
+                            <input type="text" id="kayit-ad" placeholder="Adın" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Soyad</label>
+                            <input type="text" id="kayit-soyad" placeholder="Soyadın" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" id="kayit-email" placeholder="ornek@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <div class="input-eye-wrap">
+                            <input type="password" id="kayit-sifre" placeholder="En az 6 karakter" required>
+                            <button type="button" class="eye-btn" onclick="togglePassword('kayit-sifre', this)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-full" onclick="kayitAdim2Gec()">
+                        <span>İlerle</span>
+                        <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+
+                <!-- ADIM 2 -->
+                <div id="kayit-step-2" class="hidden">
+                    <div class="auth-form-header">
+                        <h2>Fiziksel Bilgiler 📏</h2>
+                        <p>Adım 2/2 · Sağlık profili</p>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doğum Tarihi</label>
+                            <input type="date" id="kayit-dogum" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cinsiyet</label>
+                            <select id="kayit-cinsiyet">
+                                <option value="ERKEK">Erkek</option>
+                                <option value="KADIN">Kadın</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Boy (cm)</label>
+                            <input type="number" id="kayit-boy" placeholder="175" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Güncel Kilo (kg)</label>
+                            <input type="number" id="kayit-kilo" placeholder="70" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hedef Kilo (kg)</label>
+                            <input type="number" id="kayit-hedef-kilo" placeholder="65" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Aktivite Seviyesi</label>
+                        <select id="kayit-aktivite">
+                            <option value="SEDANTER">😴 Sedanter – Masabaşı / Hareketsiz</option>
+                            <option value="HAFIF_AKTIF">🚶 Hafif Aktif – Haftada 1-3 gün</option>
+                            <option value="ORTA_AKTIF">🏃 Orta Aktif – Haftada 3-5 gün</option>
+                            <option value="COK_AKTIF">💪 Çok Aktif – Haftada 6-7 gün</option>
+                            <option value="EKSTRA_AKTIF">🔥 Ekstra Aktif – Sporcu/ağır iş</option>
+                        </select>
+                    </div>
+                    <div class="btn-row" style="gap:8px">
+                        <button type="button" class="btn btn-outline" onclick="kayitAdim1Gec()">← Geri</button>
+                        <button type="submit" class="btn btn-primary btn-full" id="kayit-submit-btn">
+                            <span>Kayıt Ol</span>
+                            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="kayit-hata" class="auth-error hidden"></div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===================== ANA UYGULAMA ===================== -->
+<div id="app-screen" class="app-screen hidden">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sb-logo">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <circle cx="14" cy="14" r="14" fill="var(--green)"/>
+                    <text x="14" y="19" text-anchor="middle" font-size="14">🥗</text>
+                </svg>
+            </div>
+            <span class="sb-title">Sağlık<span class="sb-title-dot">.</span></span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sb-avatar" id="sb-avatar">A</div>
+            <div class="sb-user-info">
+                <div class="sb-user-name" id="sb-user-name">Kullanıcı</div>
+                <div class="sb-user-email" id="sb-user-email">—</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="sb-nav-item active" data-page="dashboard">
+                <svg class="sb-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Ana Sayfa</span>
+            </button>
+            <button class="sb-nav-item" data-page="profil">
+                <svg class="sb-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profil</span>
+            </button>
+
+            <button class="sb-nav-item" data-page="raporlar">
+                <svg class="sb-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Analiz ve Raporlar</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="sb-logout" onclick="cikisYap()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Çıkış Yap</span>
+            </button>
+        </div>
+    </aside>
+    <div id="sidebar-backdrop" class="sidebar-backdrop hidden" onclick="closeSidebar()"></div>
+
+    <main class="app-main">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger desktop" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <div class="topbar-title" id="topbar-title">Ana Sayfa</div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-user">
+                    <div class="topbar-avatar nav-to-profil" id="topbar-avatar" role="button" tabindex="0" title="Profilim" onclick="navigateToPage('profil')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); navigateToPage('profil')}">A</div>
+                    <span class="topbar-user-name" id="topbar-user-name">Kullanıcı</span>
+                </div>
+                <button class="topbar-theme-btn" id="topbar-theme-btn" onclick="toggleDarkMode()" title="Tema değiştir">
+                    <span id="theme-emoji">🌙</span>
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="cikisYap()">Çıkış</button>
+            </div>
+        </header>
+
+        <header class="mobile-header">
+            <span class="mobile-title">Sağlık<span style="color:var(--green)">.</span></span>
+            <div class="mobile-header-actions">
+                <button type="button" class="mobile-logout-btn" onclick="cikisYap()" title="Çıkış yap" aria-label="Çıkış yap">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </button>
+                <button type="button" class="topbar-theme-btn" id="mobile-theme-btn" onclick="toggleDarkMode()" title="Tema değiştir">
+                    <span id="theme-emoji-mobile">🌙</span>
+                </button>
+                <div class="sb-avatar mobile-avatar nav-to-profil" id="mobile-avatar" role="button" tabindex="0" title="Profilim" onclick="navigateToPage('profil')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); navigateToPage('profil')}">A</div>
+            </div>
+        </header>
+
+        <!-- ===== PAGE: DASHBOARD ===== -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <div>
+                    <h1 id="dashboard-greeting">Merhaba!</h1>
+                    <p class="page-sub" id="dashboard-date">Bugün ne yedin?</p>
+                </div>
+                <div class="page-actions">
+                    <div class="streak-mini hidden" id="dash-streak-mini">
+                        <span>🔥</span>
+                        <b id="dash-streak-count">0</b> günlük seri
+                    </div>
+                    <div class="date-strip">
+                        <input type="date" id="dash-date" class="date-input">
+                    </div>
+                    <button class="btn btn-outline" onclick="setGunlukHedefAc()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Hedef Kalori
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seçili yemek detayı -->
+            <div id="selected-food-box" class="card selected-food hidden"></div>
+
+            <!-- KALORİ HERO -->
+            <div class="card kalori-hero">
+                <div class="kalori-ring-side">
+                    <div class="kalori-ring-wrap">
+                        <svg class="calorie-donut" viewBox="0 0 140 140">
+                            <circle class="donut-bg" cx="70" cy="70" r="58"/>
+                            <circle class="donut-fill" id="calorie-ring-fill" cx="70" cy="70" r="58"/>
+                            <circle class="donut-over" id="calorie-ring-over" cx="70" cy="70" r="58"/>
+                        </svg>
+                        <div class="ring-center">
+                            <div class="ring-consumed" id="kcal-alinan">0</div>
+                            <div class="ring-unit">kcal alındı</div>
+                            <div class="ring-goal">Hedef: <span id="kcal-hedef">2000</span></div>
+                        </div>
+                    </div>
+                    <div class="ring-kalan-row">
+                        <div class="ring-kalan-item">
+                            <span class="ring-kalan-lbl">Kalan</span>
+                            <span class="ring-kalan-val" id="kcal-kalan">—</span>
+                        </div>
+                        <div class="ring-kalan-divider"></div>
+                        <div class="ring-kalan-item">
+                            <span class="ring-kalan-lbl">Durum</span>
+                            <span class="ring-kalan-val ring-status" id="calorie-status">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="macro-bars-side">
+                    <div class="macro-bars-title">Makro Besinler</div>
+
+                    <div class="macro-bar-group">
+                        <div class="macro-bar-header">
+                            <span class="macro-dot protein-dot"></span>
+                            <span class="macro-bar-name">Protein</span>
+                            <span class="macro-bar-val"><span id="macro-protein">0</span> g</span>
+                            <span class="macro-bar-pct" id="macro-protein-pct">—</span>
+                        </div>
+                        <div class="macro-track">
+                            <div class="macro-fill protein" id="macro-protein-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="macro-bar-group">
+                        <div class="macro-bar-header">
+                            <span class="macro-dot karb-dot"></span>
+                            <span class="macro-bar-name">Karbonhidrat</span>
+                            <span class="macro-bar-val"><span id="macro-karb">0</span> g</span>
+                            <span class="macro-bar-pct" id="macro-karb-pct">—</span>
+                        </div>
+                        <div class="macro-track">
+                            <div class="macro-fill karb" id="macro-karb-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="macro-bar-group">
+                        <div class="macro-bar-header">
+                            <span class="macro-dot yag-dot"></span>
+                            <span class="macro-bar-name">Yağ</span>
+                            <span class="macro-bar-val"><span id="macro-yag">0</span> g</span>
+                            <span class="macro-bar-pct" id="macro-yag-pct">—</span>
+                        </div>
+                        <div class="macro-track">
+                            <div class="macro-fill yag" id="macro-yag-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="macro-tip" id="macro-tip">Bugün henüz besin eklenmedi.</div>
+                </div>
+            </div>
+
+            <!-- SU + KİLO -->
+            <div class="card-grid two-col" style="margin-top:16px">
+                <div class="card water-card">
+                    <div class="card-header">
+                        <span class="card-icon">💧</span>
+                        <h2>Su Takibi</h2>
+                        <span class="water-goal-chip">Hedef 2 L</span>
+                    </div>
+
+                    <div class="water-vis-row">
+                        <div class="water-bottle-wrap">
+                            <div class="water-bottle">
+                                <div class="water-bottle-fill" id="water-bottle-fill">
+                                    <div class="water-wave"></div>
+                                </div>
+                                <div class="water-bottle-val" id="water-bottle-val">0%</div>
+                            </div>
+                        </div>
+                        <div class="water-info">
+                            <div class="water-big"><span id="dash-su">0</span><small> ml</small></div>
+                            <div class="water-progress-track">
+                                <div class="water-progress-fill" id="water-progress-fill"></div>
+                            </div>
+                            <div class="water-remaining-text" id="water-remaining-text">2000 ml kalan</div>
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-water-minus" onclick="suDegistir(-250)">-250</button>
+                        <button class="btn btn-water-minus" onclick="suDegistir(-500)">-500</button>
+                        <button class="btn btn-water-plus" onclick="suDegistir(250)">+250</button>
+                        <button class="btn btn-water-plus" onclick="suDegistir(500)">+500</button>
+                    </div>
+                    <div class="water-presets">
+                        <button class="water-preset-btn" onclick="suDegistir(200)">☕ 200ml</button>
+                        <button class="water-preset-btn" onclick="suDegistir(330)">🥤 330ml</button>
+                        <button class="water-preset-btn" onclick="suDegistir(1000)">🫙 1L</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">⚖️</span>
+                        <h2>Kilo Takibi</h2>
+                    </div>
+                    <div class="form">
+                        <div class="kilo-display">
+                            <div class="kilo-current-label">Mevcut Kilo</div>
+                            <div class="kilo-current-val"><span id="dash-kilo">—</span> <small>kg</small></div>
+                            <div class="kilo-bmi-row hidden" id="kilo-bmi-row">
+                                <span class="bmi-chip" id="bmi-chip">BMI: —</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Yeni Kilo (kg)</label>
+                            <div class="kilo-input-row">
+                                <input type="number" id="dash-kilo-input" step="0.1" placeholder="72.5" min="20" max="300">
+                                <button class="btn btn-primary kilo-update-btn" onclick="kiloGuncelle()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Güncelle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÖĞÜN YÖNETİMİ -->
+            <div class="meal-stack">
+                <div class="meal-section">
+                    <div class="meal-header">
+                        <div class="meal-header-left">
+                            <span class="meal-emoji">☀️</span>
+                            <h2>Kahvaltı</h2>
+                            <span class="meal-kcal-badge" id="meal-kcal-KAHVALTI">0 kcal</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="yemekModalAc('KAHVALTI')">+ Ekle</button>
+                    </div>
+                    <div class="meal-list" id="meal-KAHVALTI"><p class="empty-msg">Henüz ekleme yok.</p></div>
+                </div>
+
+                <div class="meal-section">
+                    <div class="meal-header">
+                        <div class="meal-header-left">
+                            <span class="meal-emoji">🌤️</span>
+                            <h2>Öğle</h2>
+                            <span class="meal-kcal-badge" id="meal-kcal-OGLE">0 kcal</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="yemekModalAc('OGLE')">+ Ekle</button>
+                    </div>
+                    <div class="meal-list" id="meal-OGLE"><p class="empty-msg">Henüz ekleme yok.</p></div>
+                </div>
+
+                <div class="meal-section">
+                    <div class="meal-header">
+                        <div class="meal-header-left">
+                            <span class="meal-emoji">🌙</span>
+                            <h2>Akşam</h2>
+                            <span class="meal-kcal-badge" id="meal-kcal-AKSAM">0 kcal</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="yemekModalAc('AKSAM')">+ Ekle</button>
+                    </div>
+                    <div class="meal-list" id="meal-AKSAM"><p class="empty-msg">Henüz ekleme yok.</p></div>
+                </div>
+
+                <div class="meal-section">
+                    <div class="meal-header">
+                        <div class="meal-header-left">
+                            <span class="meal-emoji">🍎</span>
+                            <h2>Atıştırmalık</h2>
+                            <span class="meal-kcal-badge" id="meal-kcal-ARA_OGUN">0 kcal</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="yemekModalAc('ARA_OGUN')">+ Ekle</button>
+                    </div>
+                    <div class="meal-list" id="meal-ARA_OGUN"><p class="empty-msg">Henüz ekleme yok.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PAGE: PROFİL ===== -->
+        <div class="page" id="page-profil">
+            <div class="page-header">
+                <div>
+                    <h1>Profilim</h1>
+                    <p class="page-sub">Kişisel bilgilerini yönet.</p>
+                </div>
+            </div>
+
+            <div class="profil-hero-card card">
+                <div class="profil-avatar-wrap" role="button" tabindex="0" title="Profil fotoğrafı — tıklayın"
+                     onclick="profilPhotoMenuToggle(event)"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();profilPhotoMenuToggle(event);}">
+                    <div class="profil-avatar" id="profil-avatar">A</div>
+                    <div class="profil-avatar-ring"></div>
+                    <div id="profil-photo-menu" class="profil-photo-popover hidden" role="menu" onclick="event.stopPropagation()">
+                        <button type="button" class="profil-photo-menu-item" role="menuitem" onclick="profilPhotoPickGallery(event)">Galeriden seç</button>
+                        <button type="button" class="profil-photo-menu-item" role="menuitem" onclick="profilPhotoPickCamera(event)">Kamera ile çek</button>
+                        <button type="button" class="profil-photo-menu-item profil-photo-remove hidden" role="menuitem" onclick="profilPhotoRemove(event)">Fotoğrafı kaldır</button>
+                    </div>
+                </div>
+                <input type="file" id="profil-photo-file-gallery" class="hidden" accept="image/*" onchange="profilPhotoFileChosen(this)">
+                <input type="file" id="profil-photo-file-camera" class="hidden" accept="image/*" capture="environment" onchange="profilPhotoFileChosen(this)">
+                <div class="profil-info">
+                    <div class="profil-name" id="profil-name">—</div>
+                    <div class="profil-email" id="profil-email">—</div>
+                    <div class="profil-badges">
+                        <span class="profil-badge">Kullanıcı</span>
+                        <span class="profil-streak-badge hidden" id="profil-streak">🔥 0 günlük seri</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📏</span>
+                        <h2>Fiziksel Bilgilerimi Kaydet</h2>
+                    </div>
+                    <form id="form-fiziksel" class="form">
+                        <div class="form-group">
+                            <label>Doğum Tarihi</label>
+                            <input type="date" id="fiz-dogum" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cinsiyet</label>
+                            <select id="fiz-cinsiyet">
+                                <option value="ERKEK">Erkek</option>
+                                <option value="KADIN">Kadın</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Boy (cm)</label>
+                                <input type="number" id="fiz-boy" placeholder="175" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hedef Kilo (kg)</label>
+                                <input type="number" id="fiz-hedefKilo" placeholder="70" step="0.1" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Aktivite Seviyesi</label>
+                            <select id="fiz-aktivite">
+                                <option value="SEDANTER">😴 Sedanter – Masabaşı / Hareketsiz</option>
+                                <option value="HAFIF_AKTIF">🚶 Hafif Aktif – Haftada 1-3 gün</option>
+                                <option value="ORTA_AKTIF">🏃 Orta Aktif – Haftada 3-5 gün</option>
+                                <option value="COK_AKTIF">💪 Çok Aktif – Haftada 6-7 gün</option>
+                                <option value="EKSTRA_AKTIF">🔥 Ekstra Aktif – Sporcu/ağır iş</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Bilgileri Kaydet</button>
+                    </form>
+                    <div id="fiziksel-sonuc" class="result-box hidden"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📋</span>
+                        <h2>Mevcut Bilgilerim</h2>
+                    </div>
+                    <div id="fiziksel-getir-sonuc" class="fiziksel-card hidden"></div>
+
+                    <!-- BMI Kartı -->
+                    <div id="bmi-card" class="bmi-display hidden">
+                        <div class="bmi-title">Vücut Kitle İndeksi (BMI)</div>
+                        <div class="bmi-value-row">
+                            <div class="bmi-big" id="bmi-value">—</div>
+                            <div class="bmi-label" id="bmi-label">—</div>
+                        </div>
+                        <div class="bmi-bar-track">
+                            <div class="bmi-bar-zone underweight">Zayıf<br><span>< 18.5</span></div>
+                            <div class="bmi-bar-zone normal">Normal<br><span>18.5–25</span></div>
+                            <div class="bmi-bar-zone overweight">Fazla<br><span>25–30</span></div>
+                            <div class="bmi-bar-zone obese">Obez<br><span>> 30</span></div>
+                        </div>
+                        <div class="bmi-bar-indicator-wrap">
+                            <div class="bmi-bar-indicator" id="bmi-indicator"></div>
+                        </div>
+                        <div class="bmi-note" id="bmi-note"></div>
+                    </div>
+
+                    <!-- TDEE Hesaplama -->
+                    <div id="tdee-card" class="tdee-display hidden">
+                        <div class="tdee-title">Kalori Planı</div>
+                        <div class="tdee-row">
+                            <span class="tdee-label">Günlük ihtiyacın (koruma)</span>
+                            <span class="tdee-value-sm"><span id="tdee-maintenance">—</span> kcal</span>
+                        </div>
+                        <div class="tdee-row">
+                            <span class="tdee-label">Hedefiniz doğrultusunda</span>
+                            <span class="tdee-value"><span id="tdee-target">—</span> kcal</span>
+                        </div>
+                        <div class="tdee-row">
+                            <span class="tdee-label">Haftalık tahmini değişim</span>
+                            <span class="tdee-value-sm" id="tdee-weekly">—</span>
+                        </div>
+                        <div class="tdee-row">
+                            <span class="tdee-label">Hedefe tahmini süre</span>
+                            <span class="tdee-value-sm" id="tdee-duration">—</span>
+                        </div>
+                        <div class="tdee-note" id="tdee-note"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- ===== PAGE: ANALİZ VE RAPORLAR ===== -->
+        <div class="page" id="page-raporlar">
+            <div class="page-header">
+                <div>
+                    <h1>Analiz ve Raporlar</h1>
+                    <p class="page-sub">Gelişimini görselleştir.</p>
+                </div>
+                <button class="btn btn-outline" onclick="raporlariYukle()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.4"/></svg>
+                    Yenile
+                </button>
+            </div>
+
+            <!-- Özet Stat Kartları -->
+            <div class="report-stats" id="report-stats">
+                <div class="rstat-card">
+                    <div class="rstat-icon">📅</div>
+                    <div class="rstat-val" id="rstat-days">—</div>
+                    <div class="rstat-lbl">Takip Günü</div>
+                </div>
+                <div class="rstat-card">
+                    <div class="rstat-icon">🔥</div>
+                    <div class="rstat-val" id="rstat-avg-cal">—</div>
+                    <div class="rstat-lbl">Ort. Kalori</div>
+                </div>
+                <div class="rstat-card">
+                    <div class="rstat-icon">💪</div>
+                    <div class="rstat-val" id="rstat-streak">—</div>
+                    <div class="rstat-lbl">Seri (gün)</div>
+                </div>
+                <div class="rstat-card">
+                    <div class="rstat-icon">⚖️</div>
+                    <div class="rstat-val" id="rstat-weight-change">—</div>
+                    <div class="rstat-lbl">Kilo Değişim</div>
+                </div>
+            </div>
+
+            <div class="card-grid two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📉</span>
+                        <h2>Kilo Değişim Grafiği</h2>
+                    </div>
+                    <canvas id="chart-weight" height="180"></canvas>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🎯</span>
+                        <h2>Kilo Hedef İlerleme</h2>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-meta">
+                            <div class="pmeta-item"><span class="pmeta-lbl">Başlangıç</span><b id="pr-bas">—</b> kg</div>
+                            <div class="pmeta-item"><span class="pmeta-lbl">Mevcut</span><b id="pr-mev">—</b> kg</div>
+                            <div class="pmeta-item"><span class="pmeta-lbl">Hedef</span><b id="pr-hedef">—</b> kg</div>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="pr-fill" style="width:0%"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span class="muted">Tamamlanan</span>
+                            <b id="pr-yuzde">—</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="card-grid two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🔥</span>
+                        <h2>Kalori Raporu (Son 7 Gün)</h2>
+                    </div>
+                    <canvas id="chart-calories" height="180"></canvas>
+                </div>
+                <div class="card macro-dist-card">
+                    <div class="card-header">
+                        <span class="card-icon">🥦</span>
+                        <h2>Makro Dağılımı (Son 7 Gün)</h2>
+                    </div>
+                    <div class="macro-donut-wrap">
+                        <canvas id="chart-macros" height="180"></canvas>
+                        <div class="macro-legend" id="macro-legend"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+            <button class="mb-nav-item active" data-page="dashboard" type="button">
+                <span>🏠</span>
+                <small>Ana Sayfa</small>
+            </button>
+            <button class="mb-nav-item" data-page="profil" type="button">
+                <span>👤</span>
+                <small>Profil</small>
+            </button>
+            <button class="mb-nav-item" data-page="raporlar" type="button">
+                <span>📈</span>
+                <small>Raporlar</small>
+            </button>
+        </nav>
+    </main>
+</div>
+
+<!-- Yemek Ekle Modal -->
+<div id="yemek-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('yemek-modal')">
+    <div class="modal-box modal-box-lg">
+        <div class="modal-header">
+            <div>
+                <h3 id="yemek-modal-title">Yemek Ekle</h3>
+                <p class="modal-sub" id="yemek-modal-sub">Öğününüze besin ekleyin</p>
+            </div>
+            <button onclick="closeModal('yemek-modal')" class="modal-close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="form">
+            <div class="yemek-modal-tabs" role="tablist">
+                <button type="button" role="tab" class="yemek-tab active" data-tab="ara" aria-selected="true" onclick="yemekModalSetTab('ara')">Ara</button>
+                <button type="button" role="tab" class="yemek-tab" data-tab="kamera" aria-selected="false" onclick="yemekModalSetTab('kamera')">Kamera</button>
+                <button type="button" role="tab" class="yemek-tab" data-tab="barkod" aria-selected="false" onclick="yemekModalSetTab('barkod')">Barkod</button>
+            </div>
+
+            <div id="yemek-panel-ara" class="yemek-tab-panel">
+                <div class="form-group modal-search-wrap">
+                    <label for="modal-food-arama">Besin Ara</label>
+                    <div class="modal-main-field-row">
+                        <div class="modal-search-input-wrap">
+                            <input type="text" id="modal-food-arama" placeholder="Besin adı yazın…" oninput="modalBesinAra(this.value)" autocomplete="off">
+                            <div id="modal-food-sonuclar" class="autocomplete-results hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="yemek-panel-kamera" class="yemek-tab-panel hidden">
+                <div id="modal-photo-picker" class="modal-photo-picker modal-photo-picker--tab">
+                    <div class="photo-pick-row">
+                        <label class="photo-pick-btn" for="modal-photo-gallery">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            Galeri
+                        </label>
+                        <label class="photo-pick-btn" for="modal-photo-camera">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Çek
+                        </label>
+                    </div>
+                    <input type="file" id="modal-photo-gallery" accept="image/*" style="display:none" onchange="modalPhotoAnalyze(this)">
+                    <input type="file" id="modal-photo-camera" accept="image/*" capture="environment" style="display:none" onchange="modalPhotoAnalyze(this)">
+                </div>
+                <div id="modal-photo-preview" class="modal-photo-preview modal-photo-preview--tab hidden">
+                    <img id="modal-photo-preview-img" alt="Seçilen fotoğraf">
+                    <div class="photo-preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="modalPhotoRetake()">Tekrar seç</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="modalPhotoUse()">Bu fotoğrafı analiz et</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="yemek-panel-barkod" class="yemek-tab-panel hidden">
+                <div class="form-group modal-search-wrap">
+                    <label for="modal-barcode-input">Paket barkodu</label>
+                    <div class="modal-main-field-row modal-barcode-main-row">
+                        <input type="text" id="modal-barcode-input" class="modal-barcode-input" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="869… (EAN)" onkeydown="if(event.key==='Enter'){event.preventDefault();modalBarcodeBul();}">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="modalBarcodeBul()" title="Open Food Facts ile bul">Bul</button>
+                        <label class="btn-camera barcode-cam-btn" for="barcode-scan-file" title="Barkodu fotoğrafla okumayı dene">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+                        </label>
+                        <input type="file" id="barcode-scan-file" accept="image/*" capture="environment" style="display:none" onchange="modalBarcodeFromImage(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI analiz sonucu (fotoğraf) -->
+            <div id="ai-review-panel" class="ai-review-panel hidden">
+                <div class="ai-review-header">
+                    <span class="ai-review-title">📷 Kamera</span>
+                    <span class="ai-review-sub">İsim için <b>Düzenle</b> (tek kelime ise AI yeniler). Yapılış için <b>Porsiyon &amp; Detay</b> ile alan açılır; not + içerideki <b>Kaydet</b> makroları günceller (sepet ile aynı).</span>
+                </div>
+                <div id="ai-review-items"></div>
+                <div id="ai-review-loading" class="ai-review-loading hidden">
+                    <div class="ai-spin"></div>
+                    <span>Analiz ediliyor…</span>
+                </div>
+                <button class="btn btn-primary btn-full" id="ai-review-add-btn" onclick="aiReviewEkle()" style="margin-top:10px">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Sepete Ekle
+                </button>
+            </div>
+
+            <!-- AI öneri panel (metin arama sonucu yok) -->
+            <div id="ai-suggest-panel" class="ai-review-panel hidden">
+                <div class="ai-review-header">
+                    <span class="ai-review-title" id="ai-suggest-panel-title">🔍 Ara</span>
+                </div>
+                <div id="ai-suggest-loading" class="ai-review-loading hidden">
+                    <div class="ai-spin"></div>
+                    <span>Yükleniyor…</span>
+                </div>
+                <div id="ai-suggest-items"></div>
+            </div>
+
+            <!-- Sepet (birden fazla yemek) -->
+            <div id="modal-basket" class="modal-basket hidden">
+                <div class="basket-header">
+                    <span class="basket-title">🛒 Sepet</span>
+                    <span class="basket-count" id="basket-count">0 öğe</span>
+                </div>
+                <div class="basket-items-scroll" id="basket-items-scroll" aria-label="Sepet ürünleri">
+                    <div id="basket-items"></div>
+                </div>
+                <div id="basket-summary-row" class="basket-summary-row"></div>
+            </div>
+
+            <input type="hidden" id="modal-foodId">
+
+            <div class="selected-food-preview hidden" id="modal-food-preview">
+                <div class="sfp-name" id="sfp-name">—</div>
+                <div class="sfp-macros" id="sfp-macros">—</div>
+            </div>
+
+            <!-- Miktar + Listeye Ekle -->
+            <div id="modal-add-row" class="modal-add-row hidden">
+                <div class="form-group" style="flex:1;margin:0">
+                    <label>Miktar <span class="hint" id="modal-birim-hint">(1 = 1 birim)</span></label>
+                    <input type="number" id="modal-miktar" min="0.1" step="0.1" value="1" oninput="modalOnizlemeGuncelle()">
+                </div>
+                <button class="btn btn-outline" onclick="modalSepeteEkle()" style="align-self:flex-end">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Listeye Ekle
+                </button>
+            </div>
+
+            <div class="modal-onizleme-card" id="modal-onizleme">
+                <span class="muted">Besin seçin ve miktar girin…</span>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="modalOnayla()" id="modal-onayla-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Tümünü Öğüne Ekle
+            </button>
+            <div id="modal-sonuc" class="result-box hidden"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Hedef Kalori Modal -->
+<div id="hedef-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('hedef-modal')">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h3>Günlük Hedef Kalori</h3>
+                <p class="modal-sub">Kalori hedefinizi belirleyin</p>
+            </div>
+            <button onclick="closeModal('hedef-modal')" class="modal-close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="form">
+            <div class="hedef-presets">
+                <button class="preset-btn" data-kcal="1200" onclick="setHedefPresetFromBtn(this)">🏃 1200<span>Diyet</span></button>
+                <button class="preset-btn" data-kcal="1500" onclick="setHedefPresetFromBtn(this)">🥗 1500<span>Hafif</span></button>
+                <button class="preset-btn" data-kcal="2000" onclick="setHedefPresetFromBtn(this)">⚖️ 2000<span>Normal</span></button>
+                <button class="preset-btn" data-kcal="2500" onclick="setHedefPresetFromBtn(this)">💪 2500<span>Aktif</span></button>
+            </div>
+            <div class="form-group">
+                <label>Özel Hedef (kcal)</label>
+                <input type="number" id="hedef-kcal-input" min="500" step="50" placeholder="2000">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="setGunlukHedefKaydet()">Kaydet</button>
+            <div id="hedef-sonuc" class="result-box hidden"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Düzenle Modal -->
+<div id="duzenle-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('duzenle-modal')">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h3>Yemek Düzenle</h3>
+                <p class="modal-sub">Miktarı güncelleyin</p>
+            </div>
+            <button onclick="closeModal('duzenle-modal')" class="modal-close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="form">
+            <div class="form-group">
+                <label>Yemek</label>
+                <div id="duzenle-yemek-adi" class="duzenle-yemek-name">—</div>
+            </div>
+            <div class="form-group">
+                <label>Yeni Miktar</label>
+                <input type="number" id="duzenle-miktar" min="0.1" step="0.1" value="1">
+            </div>
+            <div class="duzenle-preview" id="duzenle-preview"></div>
+            <button class="btn btn-primary btn-full" onclick="duzenleKaydet()">Güncelle</button>
+            <div id="duzenle-sonuc" class="result-box hidden"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-box-sm">
+        <div class="confirm-icon">🗑️</div>
+        <h3 class="confirm-title">Bu yemeği sil?</h3>
+        <p class="confirm-sub" id="confirm-food-name">—</p>
+        <div class="confirm-btns">
+            <button class="btn btn-outline" onclick="closeModal('confirm-modal')">Vazgeç</button>
+            <button class="btn btn-danger-solid" id="confirm-delete-btn">Sil</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden">
+    <span class="toast-icon" id="toast-icon">✓</span>
+    <span id="toast-msg">—</span>
+</div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+</div>
+
+<script src="app.js?v=37"></script>
+</body>
+</html>

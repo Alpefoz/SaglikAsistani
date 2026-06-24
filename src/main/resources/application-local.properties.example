@@ -1,0 +1,11 @@
+# Bu dosyayi kopyalayin: application-local.properties (git'e EKLENMEZ)
+# Neon panelinden baglanti bilgilerini alin. Host'ta "c-3" gibi bolge parcasi olabilir.
+
+server.port=8080
+
+spring.datasource.url=jdbc:postgresql://BURAYA_HOST.neon.tech/neondb?sslmode=require
+spring.datasource.username=neondb_owner
+spring.datasource.password=BURAYA_DB_SIFRESI
+
+# Groq API: https://console.groq.com/keys
+groq.api.key=gsk_BURAYA_GROQ_ANAHTARI
